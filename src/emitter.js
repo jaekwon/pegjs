@@ -567,8 +567,24 @@ PEG.compiler.emitter = function(ast) {
             '#block expressionCode',
             'while (#{expressionResultVar} !== null) {',
             '  #{resultVar}.push(#{expressionResultVar});',
+            '  #if joinCode',
+            '    #block joinCode',
+            '    if (#{joinResultVar} === null) {',
+            '      break;',
+            '    }',
+            '  #end',
             '  #block expressionCode',
-            '}'
+            '}',
+            '#if min !== undefined && min !== null',
+            '  if (#{resultVar}.length < #{min}) {',
+            '    #{resultVar} = null;',
+            '  }',
+            '#end',
+            '#if max !== undefined && max !== null',
+            '  if (#{resultVar}.length > #{max}) {',
+            '    #{resultVar} = null;',
+            '  }',
+            '#end'
           ],
           one_or_more: [
             '#block expressionCode',
@@ -839,6 +855,10 @@ PEG.compiler.emitter = function(ast) {
       return fill("zero_or_more", {
         expressionCode:      emit(node.expression, context.delta(1, 0)),
         expressionResultVar: resultVar(context.resultIndex + 1),
+        joinCode:            node.join ? emit(node.join, context.delta(2, 0)) : null,
+        min:                 node.min,
+        max:                 node.max,
+        joinResultVar:       resultVar(context.resultIndex + 2),
         resultVar:           resultVar(context.resultIndex)
       });
     },
@@ -868,12 +888,20 @@ PEG.compiler.emitter = function(ast) {
         formalParams = [];
         actualParams = [];
 
-        each(node.expression.elements, function(element, i) {
-          if (element.type === "labeled") {
-            formalParams.push(element.label);
-            actualParams.push(resultVar(context.resultIndex) + '[' + i + ']');
-          }
-        });
+        (function findParams(elements, inResult) {
+          each(elements, function(element, i) {
+            if (element.type === "labeled") {
+              formalParams.push(element.label);
+              if (inResult) {
+                actualParams.push('(' + inResult + '||{})[' + i + ']');
+              } else {
+                actualParams.push(resultVar(context.resultIndex) + '[' + i + ']');
+              }
+            } else if (element.type === "optional" && element.expression.type === 'sequence') {
+              findParams(element.expression.elements, '(' + inResult + '||{})[' + i + ']');
+            }
+          });
+        })(node.expression.elements);
       } else if (node.expression.type === "labeled") {
         formalParams = [node.expression.label];
         actualParams = [resultVar(context.resultIndex)];

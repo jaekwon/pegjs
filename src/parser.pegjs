@@ -115,9 +115,12 @@ suffixed
         expression: expression
       };
     }
-  / expression:primary star {
+  / expression:primary star ("{" join:primary? (";" min:integer? ("," max:integer? )? )? "}")? {
       return {
         type:       "zero_or_more",
+        join:       join || null,
+        min:        min || null,
+        max:        max || null,
         expression: expression
       };
     }
@@ -320,6 +323,13 @@ digit
 
 hexDigit
   = [0-9a-fA-F]
+
+integer
+  = n:[0-9]+ {
+      if (n)
+        return Number(n);
+      return null;
+    }
 
 letter
   = lowerCaseLetter
