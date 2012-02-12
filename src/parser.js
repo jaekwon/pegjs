@@ -717,7 +717,15 @@ PEG.parser = (function(){
           pos1 = pos;
           result0 = parse_primary();
           if (result0 !== null) {
-            result1 = parse_star();
+            if (input.charCodeAt(pos) === 42) {
+              result1 = "*";
+              pos += 1;
+            } else {
+              result1 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"*\"");
+              }
+            }
             if (result1 !== null) {
               pos2 = pos;
               if (input.charCodeAt(pos) === 123) {
@@ -816,7 +824,13 @@ PEG.parser = (function(){
               }
               result2 = result2 !== null ? result2 : "";
               if (result2 !== null) {
-                result0 = [result0, result1, result2];
+                result3 = parse___();
+                if (result3 !== null) {
+                  result0 = [result0, result1, result2, result3];
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
               } else {
                 result0 = null;
                 pos = pos1;

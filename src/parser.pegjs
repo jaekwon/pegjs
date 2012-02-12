@@ -115,7 +115,7 @@ suffixed
         expression: expression
       };
     }
-  / expression:primary star ("{" join:primary? (";" min:integer? ("," max:integer? )? )? "}")? {
+  / expression:primary '*' ("{" join:primary? (";" min:integer? ("," max:integer? )? )? "}")? __ {
       return {
         type:       "zero_or_more",
         join:       join || null,
