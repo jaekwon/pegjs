@@ -65,8 +65,17 @@ var semanticAnd = nodeWithCodeConstructor("semantic_and");
 var semanticNot = nodeWithCodeConstructor("semantic_not");
 
 var optional     = nodeWithExpressionConstructor("optional");
-var zeroOrMore   = nodeWithExpressionConstructor("zero_or_more");
 var oneOrMore    = nodeWithExpressionConstructor("one_or_more");
+
+function zeroOrMore(expression, join, min, max) {
+  return {
+    type:       "zero_or_more",
+    join:       join,
+    min:        min,
+    max:        max,
+    expression: expression
+  };
+}
 
 function action(expression, code) {
   return {

@@ -113,9 +113,9 @@ suffixed
   / expression:primary '*' ("{" join:primary? (";" min:integer? ("," max:integer? )? )? "}")? __ {
       return {
         type:       "zero_or_more",
-        join:       join || null,
-        min:        min || null,
-        max:        max || null,
+        join:       join || undefined,
+        min:        min === '' ? undefined : min,
+        max:        max,
         expression: expression
       };
     }

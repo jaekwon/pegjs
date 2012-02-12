@@ -188,6 +188,39 @@ test("removes proxy rules", function() {
       grammar: 'start = proxy*; proxy = proxied; proxied = "a"',
       ast:     simpleGrammarWithStartAndProxied({
         type:       "zero_or_more",
+        join:       undefined,
+        min:        undefined,
+        max:        undefined,
+        expression: proxiedRuleRef
+      })
+    },
+    {
+      grammar: 'start = proxy*{proxied}; proxy = proxied; proxied = "a";',
+      ast:     simpleGrammarWithStartAndProxied({
+        type:       "zero_or_more",
+        join:       proxiedRuleRef,
+        min:        undefined,
+        max:        undefined,
+        expression: proxiedRuleRef
+      })
+    },
+    {
+      grammar: 'start = proxy*{proxied;0}; proxy = proxied; proxied = "a";',
+      ast:     simpleGrammarWithStartAndProxied({
+        type:       "zero_or_more",
+        join:       proxiedRuleRef,
+        min:        0,
+        max:        undefined,
+        expression: proxiedRuleRef
+      })
+    },
+    {
+      grammar: 'start = proxy*{proxied;,2}; proxy = proxied; proxied = "a";',
+      ast:     simpleGrammarWithStartAndProxied({
+        type:       "zero_or_more",
+        join:       proxiedRuleRef,
+        min:        undefined,
+        max:        2,
         expression: proxiedRuleRef
       })
     },

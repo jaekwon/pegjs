@@ -810,9 +810,9 @@ PEG.parser = (function(){
             result0 = (function(expression, join, min, max) {
                 return {
                   type:       "zero_or_more",
-                  join:       join || null,
-                  min:        min || null,
-                  max:        max || null,
+                  join:       join || undefined,
+                  min:        min === '' ? undefined : min,
+                  max:        max,
                   expression: expression
                 };
               })(result0[0], ((result0||{})[2]||{})[1], (((result0||{})[2]||{})[2]||{})[1], ((((result0||{})[2]||{})[2]||{})[2]||{})[1]);
