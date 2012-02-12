@@ -33,18 +33,13 @@ expression
   = choice
 
 choice
-  = head:sequence tail:(slash sequence)* {
-      if (tail.length > 0) {
-        var alternatives = [head].concat(map(
-            tail,
-            function(element) { return element[1]; }
-        ));
-        return {
-          type:         "choice",
-          alternatives: alternatives
-        };
-      } else {
-        return head;
+  = alternatives:sequence*{slash;1} {
+      if (alternatives.length == 1) {
+        return alternatives[0];
+      }
+      return {
+        type: 'choice',
+        alternatives: alternatives
       }
     }
 

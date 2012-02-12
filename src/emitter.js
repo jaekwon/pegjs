@@ -892,16 +892,16 @@ PEG.compiler.emitter = function(ast) {
           each(elements, function(element, i) {
             if (element.type === "labeled") {
               formalParams.push(element.label);
-              if (inResult) {
-                actualParams.push('(' + inResult + '||{})[' + i + ']');
-              } else {
+              if (inResult == resultVar(context.resultIndex)) { // optimization
                 actualParams.push(resultVar(context.resultIndex) + '[' + i + ']');
+              } else {
+                actualParams.push('(' + inResult + '||{})[' + i + ']');
               }
             } else if (element.type === "optional" && element.expression.type === 'sequence') {
               findParams(element.expression.elements, '(' + inResult + '||{})[' + i + ']');
             }
           });
-        })(node.expression.elements);
+        })(node.expression.elements, resultVar(context.resultIndex));
       } else if (node.expression.type === "labeled") {
         formalParams = [node.expression.label];
         actualParams = [resultVar(context.resultIndex)];
